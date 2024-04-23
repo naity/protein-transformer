@@ -10,6 +10,7 @@ from pathlib import Path
 from typing_extensions import Annotated
 from model import AntibodyClassifier
 from data import Tokenizer, load_data, BCRDataset, collate_fn
+from utils import get_device
 from torch.utils.data import DataLoader
 from sklearn.metrics import precision_recall_fscore_support, roc_auc_score
 
@@ -63,26 +64,20 @@ def evaluate(
 
     # load test data
     df = load_data(dataset_loc)
-
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-    # load model
-    predictor = AntibodyPredictor.from_run_id(run_id, device)
-
-    # reset index
     df.reset_index(inplace=True, drop=True)
-
-    # datasets
     test_ds = BCRDataset(df)
 
     tokenizer = Tokenizer()
+    device = get_device()
 
+    # test dataloader
     collate_fn_partial = functools.partial(
         collate_fn, tokenizer=tokenizer, device=device
     )
-
-    # dataloader
     test_dl = DataLoader(test_ds, collate_fn=collate_fn_partial, batch_size=batch_size)
+
+    # load model
+    predictor = AntibodyPredictor.from_run_id(run_id, device)
 
     y_true, y_pred, y_prob = predictor(test_dl)
 
@@ -99,6 +94,10 @@ def evaluate(
     metrics["precision"], metrics["recall"], metrics["f1"], _ = (
         precision_recall_fscore_support(y_true, y_pred, average="weighted")
     )
+
+    save_path = Path(f"runs/{run_id}")
+    if not save_path.exists():
+        save_path.mkdir(parents=True)
 
     # Save evaluation metrics
     with open(f"runs/{run_id}/test_metrics.json", "w") as f:

@@ -35,3 +35,16 @@ def scale_dot_product_attention(
     values = attention @ v  # (*, seq_length, dv)
 
     return values, attention
+
+
+def get_device() -> torch.device:
+    """
+    Returns the appropriate device for PyTorch computations, prioritizing CUDA
+    if available, otherwise defaulting to CPU.
+
+    Returns:
+        torch.device: A `torch.device` object representing the chosen device for
+                     PyTorch computations (either CUDA or CPU).
+    """
+
+    return torch.device("cuda" if torch.cuda.is_available() else "cpu")

@@ -10,6 +10,7 @@ from pathlib import Path
 from collections import defaultdict
 from data import Tokenizer, load_data, BCRDataset, collate_fn
 from model import AntibodyClassifier
+from utils import get_device
 from typing_extensions import Annotated
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
@@ -18,6 +19,32 @@ from sklearn.metrics import precision_recall_fscore_support, roc_auc_score
 
 # create a typer app
 app = typer.Typer()
+
+
+def get_dataloaders(df, val_size, tokenizer, device, batch_size):
+    df_train, df_val = train_test_split(
+        df, stratify=df["label"], random_state=0, test_size=val_size
+    )
+
+    # reset index
+    df_train.reset_index(inplace=True, drop=True)
+    df_val.reset_index(inplace=True, drop=True)
+
+    # datasets
+    train_ds = BCRDataset(df_train)
+    val_ds = BCRDataset(df_val)
+
+    collate_fn_partial = functools.partial(
+        collate_fn, tokenizer=tokenizer, device=device
+    )
+
+    # dataloaders
+    train_dl = DataLoader(
+        train_ds, collate_fn=collate_fn_partial, batch_size=batch_size, shuffle=True
+    )
+    val_dl = DataLoader(val_ds, collate_fn=collate_fn_partial, batch_size=batch_size)
+
+    return train_dl, val_dl
 
 
 def train_epoch(
@@ -176,30 +203,11 @@ def train_model(
 
     # Dataset
     df = load_data(dataset_loc)
-    df_train, df_val = train_test_split(
-        df, stratify=df["label"], random_state=0, test_size=val_size
-    )
-
-    # reset index
-    df_train.reset_index(inplace=True, drop=True)
-    df_val.reset_index(inplace=True, drop=True)
-
-    # datasets
-    train_ds = BCRDataset(df_train)
-    val_ds = BCRDataset(df_val)
-
     tokenizer = Tokenizer()
-    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    device = get_device()
 
-    collate_fn_partial = functools.partial(
-        collate_fn, tokenizer=tokenizer, device=device
-    )
-
-    # dataloaders
-    train_dl = DataLoader(
-        train_ds, collate_fn=collate_fn_partial, batch_size=batch_size, shuffle=True
-    )
-    val_dl = DataLoader(val_ds, collate_fn=collate_fn_partial, batch_size=batch_size)
+    # train and val dataloaders
+    train_dl, val_dl = get_dataloaders(df, val_size, tokenizer, device, batch_size)
 
     # model
     model = AntibodyClassifier(
