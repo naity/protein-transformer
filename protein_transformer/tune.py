@@ -133,7 +133,7 @@ def tune_model(
 
     # save tune results
     results_df = results.get_dataframe(filter_metric="val_loss", filter_mode="min")
-    results_df.to_csv(save_path / "tune_results.csv")
+    results_df.to_csv(save_path / "tune_results.csv", index=False)
 
     # save best model and params
     best_result = results.get_best_result("val_loss", mode="min")
