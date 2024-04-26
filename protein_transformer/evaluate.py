@@ -89,7 +89,7 @@ def evaluate(
     # auc score
     if y_prob.shape[1] == 2:
         auc_score = roc_auc_score(y_true, y_prob[:, 1])
-        metrics["val_auc"] = auc_score
+        metrics["auc_score"] = auc_score
 
     metrics["precision"], metrics["recall"], metrics["f1"], _ = (
         precision_recall_fscore_support(y_true, y_pred, average="weighted")

@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import tempfile
 import functools
+import ray
 import typer
 import json
 
@@ -65,8 +66,11 @@ def train_loop(config, dataset_loc):
 
         metrics = {"train_loss": train_loss, "val_loss": val_loss}
         with tempfile.TemporaryDirectory() as tempdir:
-            checkpoint_dict = {"epoch": epoch, "model_state": model.state_dict()}
-            checkpoint_dict.update(model_kwargs)
+            checkpoint_dict = {
+                "model_kwargs": model_kwargs,
+                "epoch": epoch,
+                "model_state": model.state_dict(),
+            }
             torch.save(
                 checkpoint_dict,
                 Path(tempdir) / "checkpoint.pt",
@@ -127,22 +131,28 @@ def tune_model(
     if not save_path.exists():
         save_path.mkdir(parents=True)
 
+    # save tune results
+    results_df = results.get_dataframe(filter_metric="val_loss", filter_mode="min")
+    results_df.to_csv(save_path / "tune_results.csv")
+
     # save best model and params
     best_result = results.get_best_result("val_loss", mode="min")
     with best_result.checkpoint.as_directory() as checkpoint_dir:
         checkpoint_dict = torch.load(Path(checkpoint_dir) / "checkpoint.pt")
 
         # save model_state to save_path
-        model_state = checkpoint_dict.pop("model_state")
+        model_state = checkpoint_dict["model_state"]
         torch.save(model_state, save_path / f"best_model.pt")
-
-        # pop epoch
-        _ = checkpoint_dict.pop("epoch")
 
         # save model parameters
         with open(save_path / "args.json", "w") as f:
-            json.dump(checkpoint_dict, f, indent=4, sort_keys=False)
+            json.dump(checkpoint_dict["model_kwargs"], f, indent=4, sort_keys=False)
+
+    return results
 
 
 if __name__ == "__main__":
+    if ray.is_initialized():
+        ray.shutdown()
+    ray.init()
     app()
