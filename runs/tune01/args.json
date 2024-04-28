@@ -1,0 +1,10 @@
+{
+    "vocab_size": 24,
+    "padding_idx": 1,
+    "embedding_dim": 128,
+    "num_layers": 7,
+    "num_heads": 1,
+    "ffn_dim": 256,
+    "dropout": 0.06,
+    "num_classes": 2
+}
