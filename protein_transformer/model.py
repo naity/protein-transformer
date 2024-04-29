@@ -261,7 +261,7 @@ class PositionalEncoding(nn.Module):
     Injects positional information into token embeddings using sine and cosine functions.
 
     The positional encoding is added to the token embeddings to provide the model with
-    information about the relative or absolute position of each token in a sequence.
+    information about the position of each token in a sequence.
 
     Args:
         embedding_dim (int): The dimension of the token embeddings.

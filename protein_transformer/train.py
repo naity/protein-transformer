@@ -14,7 +14,11 @@ from utils import get_device
 from typing_extensions import Annotated
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
-from sklearn.metrics import precision_recall_fscore_support, roc_auc_score
+from sklearn.metrics import (
+    accuracy_score,
+    roc_auc_score,
+    precision_recall_fscore_support,
+)
 
 
 # create a typer app
@@ -174,7 +178,7 @@ def train_model(
     lr: Annotated[
         float, typer.Option(help="The learning rate for the optimizer")
     ] = 1e-4,
-    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 10,
+    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 20,
     verbose: Annotated[
         bool, typer.Option(help="Whether to print verbose training messages")
     ] = True,
@@ -262,6 +266,9 @@ def train_model(
             # save best model
             torch.save(model.state_dict(), save_path / f"best_model.pt")
 
+        # accuracy
+        results["val_accuracy"].append(accuracy_score(y_true, y_pred))
+
         # auc score
         if num_classes == 2:
             auc_score = roc_auc_score(y_true, y_prob[:, 1])
@@ -284,6 +291,8 @@ def train_model(
 
     # Save training results as CSV
     results = pd.DataFrame(results)
+    # round
+    results = results.round(3)
     results.to_csv(save_path / "results.csv", index=False)
 
 
