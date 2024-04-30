@@ -12,8 +12,11 @@ from model import AntibodyClassifier
 from data import Tokenizer, load_data, BCRDataset, collate_fn
 from utils import get_device
 from torch.utils.data import DataLoader
-from sklearn.metrics import precision_recall_fscore_support, roc_auc_score
-
+from sklearn.metrics import (
+    accuracy_score,
+    roc_auc_score,
+    precision_recall_fscore_support,
+)
 
 # create a typer app
 app = typer.Typer()
@@ -85,6 +88,9 @@ def evaluate(
     metrics = {
         "run_id": run_id,
     }
+
+    # accuracy
+    metrics["accuracy"] = accuracy_score(y_true, y_pred)
 
     # auc score
     if y_prob.shape[1] == 2:

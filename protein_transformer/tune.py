@@ -91,8 +91,8 @@ def tune_model(
         int, typer.Option(help="Number of final output dimensions")
     ] = 2,
     batch_size: Annotated[int, typer.Option(help="Number of samples per batch")] = 32,
-    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 10,
-    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 20,
+    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 20,
+    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 50,
     gpu_per_trial: Annotated[
         float, typer.Option(help="Number of GPU per trial")
     ] = 0.25,
