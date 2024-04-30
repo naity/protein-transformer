@@ -10,7 +10,7 @@ from pathlib import Path
 from collections import defaultdict
 from data import Tokenizer, load_data, BCRDataset, collate_fn
 from model import AntibodyClassifier
-from utils import get_device
+from utils import set_seeds, get_device
 from typing_extensions import Annotated
 from sklearn.model_selection import train_test_split
 from torch.utils.data import DataLoader
@@ -75,6 +75,7 @@ def train_epoch(
     Returns:
         The average loss value over the entire training epoch (float).
     """
+
     # Set the model to training mode
     model.train()
 
@@ -178,7 +179,7 @@ def train_model(
     lr: Annotated[
         float, typer.Option(help="The learning rate for the optimizer")
     ] = 1e-4,
-    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 20,
+    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 15,
     verbose: Annotated[
         bool, typer.Option(help="Whether to print verbose training messages")
     ] = True,
@@ -297,4 +298,5 @@ def train_model(
 
 
 if __name__ == "__main__":
+    set_seeds()
     app()

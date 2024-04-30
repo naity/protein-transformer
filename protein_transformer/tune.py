@@ -11,7 +11,7 @@ from ray import train, tune
 from typing_extensions import Annotated
 from ray.train import Checkpoint
 from ray.tune.schedulers import ASHAScheduler
-from utils import get_device
+from utils import set_seeds, get_device
 from model import AntibodyClassifier
 from train import get_dataloaders, train_epoch, val_epoch
 from data import Tokenizer, load_data
@@ -92,7 +92,7 @@ def tune_model(
     ] = 2,
     batch_size: Annotated[int, typer.Option(help="Number of samples per batch")] = 32,
     num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 20,
-    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 50,
+    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 100,
     gpu_per_trial: Annotated[
         float, typer.Option(help="Number of GPU per trial")
     ] = 0.25,
@@ -155,4 +155,5 @@ if __name__ == "__main__":
     if ray.is_initialized():
         ray.shutdown()
     ray.init()
+    set_seeds()
     app()

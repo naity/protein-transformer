@@ -10,7 +10,7 @@ from pathlib import Path
 from typing_extensions import Annotated
 from model import AntibodyClassifier
 from data import Tokenizer, load_data, BCRDataset, collate_fn
-from utils import get_device
+from utils import set_seeds, get_device
 from torch.utils.data import DataLoader
 from sklearn.metrics import (
     accuracy_score,
@@ -111,4 +111,5 @@ def evaluate(
 
 
 if __name__ == "__main__":
+    set_seeds()
     app()

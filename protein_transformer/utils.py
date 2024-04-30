@@ -1,5 +1,17 @@
 import torch
+import random
 import numpy as np
+
+
+def set_seeds() -> None:
+    """
+    Sets random seeds for NumPy, Python's random module, and PyTorch
+    for reproducibility purposes.
+    """
+
+    torch.manual_seed(0)
+    random.seed(0)
+    np.random.seed(0)
 
 
 def scale_dot_product_attention(
