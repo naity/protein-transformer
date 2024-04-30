@@ -15,12 +15,21 @@ from utils import set_seeds, get_device
 from model import AntibodyClassifier
 from train import get_dataloaders, train_epoch, val_epoch
 from data import Tokenizer, load_data
+from typing import Any
+
 
 # create a typer app
 app = typer.Typer()
 
 
-def train_loop(config, dataset_loc):
+def train_loop(config: dict[str, Any], dataset_loc: str) -> None:
+    """Trains a model using the provided configuration and dataset.
+
+    Args:
+        config (Dict[str, Any]): A dictionary containing model and training hyperparameters.
+        dataset_loc (str): Path to the dataset in parquet format.
+    """
+
     # Dataset
     df = load_data(dataset_loc)
     tokenizer = Tokenizer()
@@ -82,7 +91,7 @@ def train_loop(config, dataset_loc):
 def tune_model(
     run_id: Annotated[str, typer.Option(help="Name for the training run ID")],
     dataset_loc: Annotated[
-        str, typer.Option(help="Path to the dataset in parquet format")
+        str, typer.Option(help="Absuloate path to the dataset in parquet format")
     ],
     val_size: Annotated[
         float, typer.Option(help="Proportion of the dataset to use for validation")
@@ -91,18 +100,35 @@ def tune_model(
         int, typer.Option(help="Number of final output dimensions")
     ] = 2,
     batch_size: Annotated[int, typer.Option(help="Number of samples per batch")] = 32,
-    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 20,
-    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 100,
+    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 15,
+    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 50,
     gpu_per_trial: Annotated[
         float, typer.Option(help="Number of GPU per trial")
     ] = 0.25,
-):
+) -> tune.ResultGrid:
+    """Tunes a model using Ray Tune and saves the best result.
+
+    Args:
+        run_id (str, optional): Name for the training run ID to track results.
+        dataset_loc (str, optional): Absolute path to the dataset in parquet format.
+        val_size (float, optional): Proportion of the dataset to use for validation.
+                                    Defaults to 0.15.
+        num_classes (int, optional): Number of final output dimensions. Defaults to 2.
+        batch_size (int, optional): Number of samples per batch. Defaults to 32.
+        num_epochs (int, optional): Number of epochs for training. Defaults to 15.
+        num_samples (int, optional): Number of trials for tuning. Defaults to 50.
+        gpu_per_trial (float, optional): Number of GPUs per trial. Defaults to 0.25.
+
+    Returns:
+        tune.ExperimentAnalysis: Ray Tune object containing analysis of the tuning process.
+    """
+
     config = {
         "embedding_dim": tune.choice([2**i for i in range(4, 8)]),  # 16, 32, 64, 128
         "num_layers": tune.choice([i for i in range(1, 9)]),  # 1 to 8
         "num_heads": tune.choice([1, 2, 4, 8]),  # 1, 2, 4, 8
         "dropout": tune.quniform(0, 0.2, 0.02),
-        "lr": tune.loguniform(1e-5, 1e-1),
+        "lr": tune.loguniform(1e-5, 1e-2),
         "num_classes": num_classes,
         "val_size": val_size,
         "batch_size": batch_size,

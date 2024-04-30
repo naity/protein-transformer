@@ -199,7 +199,7 @@ def train_model(
         num_classes (int, optional): Number of final output dimensions. Defaults to 2 (binary classification).
         batch_size (int, optional): Number of samples per batch for each worker. Defaults to 32.
         lr (float, optional): The learning rate for the optimizer. Defaults to 1e-4.
-        num_epochs (int, optional): Number of epochs for training. Defaults to 10.
+        num_epochs (int, optional): Number of epochs for training. Defaults to 15.
         verbose (bool, optional): Whether to print verbose training messages. Defaults to True.
 
     Returns:

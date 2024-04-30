@@ -24,20 +24,22 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/naity/finetune-esm">
+  <a href="https://github.com/naity/protein-transformer">
     <img src="images/logo.png" alt="Logo" width="150" height="150">
   </a>
  
-<h3 align="center">Finetune-ESM</h3>
+<h3 align="center">Protein-Transformer</h3>
 
   <p align="center">
-    Scalable Protein Language Model Finetuning with Distributed Learning and Advanced Training Techniques such as LoRA.
+    Implement, train, tune, and evaluate a transformer model for antibody classification with this step-by-step code.
     <br />
     <br />
     <br />
-    <a href="https://github.com/naity/finetune-esm/issues">Report Bug</a>
+    <a href="https://receptorgpt.streamlit.app/">Blog Post</a>
     ·
-    <a href="https://github.com/naity/finetune-esm/issues">Request Feature</a>
+    <a href="https://github.com/naity/protein-transformer/issues">Report Bug</a>
+    ·
+    <a href="https://github.com/naity/protein-transformer/issues">Request Feature</a>
   </p>
 </div>
 
@@ -73,13 +75,15 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project explores scalable and efficient finetuning of protein language models like ESM-2 using advanced training techniques like FSDP (Fully Sharded Data Parallel) and LoRA (Low-Rank Adaptation).
+[![Blogpost Screen Shot][blogpost-screenshot]](https://receptorgpt.streamlit.app/)
+
+This project provides a step-by-step guide to implementing a transformer model for antibody classification, covering training, hyperparameter tuning, and evaluation. 
 
 **Highlights**
 
-* **Distributed training**: Leverage distributed computing for finetuning large protein language models on multiple GPUs.
-* **Advanced techniques**: Explore LoRA and other methods to improve finetuning efficiency and performance.
-* **Reproducibility**: Track and manage finetuning experiments using tools like MLflow.
+* **Hands-on Transformer Implementation:** Follow along with code examples to build your own transformer-based antibody classifier.
+* **Optimize Performance:** Explore hyperparameter tuning techniques to improve your model's accuracy.
+* **Evaluation:** Assess your model's generalization ability and gain insights into its performance on a hold-out test dataset.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -89,11 +93,11 @@ This project explores scalable and efficient finetuning of protein language mode
 
 * [![Python][Python_badge]][Python-url]
 * [![Pytorch][Pytorch_badge]][Pytorch-url]
-* [![ESM][ESM_badge]][ESM-url]
-* [![Lightning][Lightning_badge]][Lightning-url]
 * [![Ray][Ray_badge]][Ray-url]
-* [![MLflow][MLflow_badge]][MLflow-url]
-* [![Transformers][Transformers_badge]][Transformers-url]
+* [![Pandas][pandas_badge]][pandas-url]
+* [![NumPy][numpy_badge]][numpy-url]
+* [![scikit-learn][scikit-learn_badge]][scikit-learn-url]
+* [![Typer][typer_badge]][typer-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -104,12 +108,12 @@ This project explores scalable and efficient finetuning of protein language mode
 
 1. Clone the repo:
 ```sh
-git clone https://github.com/naity/finetune-esm.git
+git clone https://github.com/naity/protein-transformer.git
 ```
 
 2. Run the `train.py` script to see a list of available parameters:
 ```sh
-python finetune-esm/train.py --help
+python protein_transformer/train.py --help
 ```
 
 ### Prerequisites
@@ -125,33 +129,64 @@ The `requirements.txt` file lists the Python packages that need to be installed 
 
 <!-- USAGE EXAMPLES -->
 ## Usage
-In this example, we will finetune ESM-2 for the [CAFA 5 Protein Function Prediction Challenge](https://www.kaggle.com/competitions/cafa-5-protein-function-prediction) to predict the biological function of a protein based on its primary sequence.
-I have already preprocessed the data and formatted the problem as a multi-class, multi-label problem. This means that for a given protein sequence, we will predict whether it is positive for each of the 100 preselected Gene Ontology (GO) terms. Thus, the target for each protein sequence is a binary vector with a length of 100.
+In this project, we will implement, train, optimize, and evaluate a transformer-based model for antibody classification. The data has been preprocessed, formatted as a binary classification problem with a balanced number of samples in each class (200 vs. 196). Processed datasets are stored in the `data/` directory: `bcr_train.parquet` is used for training and tuning, while `bcr_test.parquet` is the hold-out test dataset. For details on the preprocessing steps, please refer to the `notebooks/bcr_preprocessing.ipynb` notebook.
 
-The processed datasets can be downloaded from [here](https://drive.google.com/drive/folders/1AV46AaOHDn_2lR65R8PIBJKXgz6Xk204?usp=sharing). Details about the preprocessing steps can be found in the `notebooks/cafa5_data_processing.ipynb` notebook.
+**1. Running the `train.py` Script**
 
-Run the following example command to finetune ESM-2 models with the processed datasets. Here, we are using the smallest model `esm2_t6_8M_UR50D` with 1 GPU and the LoRA approach. If you want to finetune a larger model and have multiple GPUs, please adjust `num_workers` and/or `num-devices` accordingly.
-```
-python finetune_esm/train.py \
-  --experiment-name esm2_t6_8M_UR50D_lora \
-  --dataset-loc data/cafa5/top100_train_split.parquet \
-  --targets-loc data/cafa5/train_bp_top100_targets.npy \
-  --esm-model esm2_t6_8M_UR50D \
-  --num-workers 1 \
-  --num-devices 1 \
-  --training-mode lora \
-  --learning-rate 0.0001 \
-  --num-epochs 5
+See the table below for key parameters when running the `train.py` script. For a full list of options, run:
+
+```sh
+python train.py --help 
 ```
 
-Once training is done, we can use MLflow to view the experiment using:
+| Parameter | Description | Default|
+| -------- | ------- | ------- |
+|--run-id | Unique name for the training run | None (Required)
+|--dataset-loc | Path to the dataset in parquet format | None (Required)
+|--val-size | Proportion of the dataset for validation | 0.15
+|--embedding-dim | Dimensionality of token embeddings | 64
+|--num-layers | Number of Transformer encoder layers | 8
+|--num-heads | Number of attention heads in the encoder | 2
+|--ffn-dim | Dimensionality of the feed-forward layer in the encoder | 128
+|--dropout | Dropout probability for regularization | 0.05
+|--batch-size | Number of samples per batch for each worker | 32
+|--lr | The learning rate for the optimizer | 0.0001
+|--num-epochs | Number of epochs for training | 15
 
-`mlflow server --host 127.0.0.1 --port 8080 --backend-store-uri ./finetune_results/mlflow`
+**2. Running the `tune.py` Script**
 
-Below are screenshots of the example experiment. We can view parameters, artifacts, and visualize the metrics results.
+See the table below for key parameters when running the `tune.py` script. For a full list of options, run:
 
-![MLflow Result 1](images/mlflow_result1.png)
-![MLflow Result 2](images/mlflow_result2.png)
+```sh
+python tune.py --help 
+```
+
+| Parameter | Description | Default|
+| -------- | ------- | ------- |
+|--run-id | Unique name for the hyperparameter tuning run | None (Required)|
+|--dataset-loc | Absolute path to the dataset in parquet format | None (Required)|
+|--val-size | Proportion of the dataset for validation | 0.15|
+|--num-classes | Number of final output dimensions | 2|
+|--batch-size | Number of samples per batch for each worker | 32|
+|--num-epochs | Number of epochs for training (per trial) | 20|
+|--num-samples | Number of trials for tuning | 100|
+|--gpu-per-trial | Number of GPUs to allocate per trial | 0.25|
+
+* Note: The --dataset-loc parameter must be specified as an absolute path.
+
+
+**3. Running the `evaluate.py` Script**
+
+See the table below for key parameters when running the `evaluate.py` script. For a full list of options, run:
+
+```sh
+python evaluate.py --help 
+```
+| Parameter | Description | Default|
+| -------- | ------- | ------- |
+|--run-id | Unique name of the training or tuning run to load the best model | None (Required)|
+|--dataset-loc | Path to the test dataset in parquet format | None (Required)|
+|--batch-size | Number of samples per batch | 64|
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -161,8 +196,10 @@ Below are screenshots of the example experiment. We can view parameters, artifac
 ## Roadmap
 
 - [x] Data Processing
+- [x] Model Implementation
 - [x] Training
-- [ ] Serving
+- [x] Hyperparameter Tuning
+- [x] Evaluation
 
 See the [open issues](https://github.com/naity/finetune-esm/issues) for a full list of proposed features (and known issues).
 
@@ -191,7 +228,7 @@ Don't forget to give the project a star! Thanks again!
 <!-- LICENSE -->
 ## License
 
-Distributed under the MIT License. See `LICENSE.txt` for more information.
+Distributed under the Apache License. See `LICENSE.txt` for more information.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -214,7 +251,7 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* [Made With ML](https://madewithml.com/)
+* [UvA Deep Learning](https://uvadlc-notebooks.readthedocs.io/en/latest/index.html)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -222,18 +259,18 @@ Distributed under the MIT License. See `LICENSE.txt` for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[product-screenshot]: images/screenshot.png
+[blogpost-screenshot]: images/screenshot.png
 [Python_badge]: https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff&style=flat
 [Python-url]: https://www.python.org/
 [Pytorch_badge]: https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=fff&style=flat
 [Pytorch-url]: https://pytorch.org/
-[Lightning_badge]: https://img.shields.io/badge/Lightning-792EE5?logo=lightning&logoColor=fff&style=flat
-[Lightning-url]: https://lightning.ai/docs/pytorch/stable/
 [Ray_badge]: https://img.shields.io/badge/Ray-028CF0?logo=ray&logoColor=fff&style=flat
 [Ray-url]: https://www.ray.io/
-[Transformers_badge]: https://img.shields.io/badge/%F0%9F%A4%97-Transformers-yellow?style=for-the-badge&style=flat
-[Transformers-url]: https://huggingface.co/docs/transformers/index
-[ESM_badge]: https://img.shields.io/badge/ESM-blue?style=for-the-badge&style=flat
-[ESM-url]: https://github.com/facebookresearch/esm/
-[MLflow_badge]: https://img.shields.io/badge/MLflow-0194E2?logo=mlflow&logoColor=fff&style=flat
-[MLflow-url]: https://mlflow.org/
+[pandas_badge]: https://img.shields.io/badge/pandas-150458?logo=pandas&logoColor=fff&style=flat
+[pandas-url]: https://pandas.pydata.org/
+[numpy_badge]: https://img.shields.io/badge/NumPy-013243?logo=numpy&logoColor=fff&style=flat
+[numpy-url]: https://numpy.org/
+[scikit-learn_badge]: https://img.shields.io/badge/scikit--learn-F7931E?logo=scikitlearn&logoColor=fff&style=flat
+[scikit-learn-url]: https://scikit-learn.org/stable/index.html
+[typer_badge]: https://img.shields.io/badge/Typer-000?logo=typer&logoColor=fff&style=flat
+[typer-url]: https://typer.tiangolo.com/

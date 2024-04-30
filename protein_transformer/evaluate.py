@@ -23,12 +23,35 @@ app = typer.Typer()
 
 
 class AntibodyPredictor:
-    def __init__(self, model, device):
+    """A class for making predictions using a trained AntibodyClassifier model."""
+
+    def __init__(self, model: AntibodyClassifier, device: torch.device):
+        """Initializes the AntibodyPredictor.
+
+        Args:
+            model (AntibodyClassifier): A trained AntibodyClassifier model.
+            device (torch.device): The device (CPU or GPU) to use for inference.
+        """
+
         self.model = model
         self.model.eval()
         self.model.to(device)
 
-    def __call__(self, test_dl):
+    def __call__(
+        self, test_dl: torch.utils.data.DataLoader
+    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+        """Makes predictions on a test dataset.
+
+        Args:
+            test_dl (torch.utils.data.DataLoader): A DataLoader containing the test data.
+
+        Returns:
+            Tuple[np.ndarray, np.ndarray, np.ndarray]:
+                - y_true: Ground truth labels
+                - y_pred: Predicted labels
+                - y_prob: Class probabilities
+        """
+
         y_true, y_pred, y_prob = [], [], []
         with torch.inference_mode():
             for batch in test_dl:
@@ -46,24 +69,48 @@ class AntibodyPredictor:
         )
 
     @classmethod
-    def from_run_id(cls, run_id, divice):
+    def from_run_id(cls, run_id: str, device: torch.device) -> "AntibodyPredictor":
+        """Loads a trained AntibodyPredictor from saved files associated with a run ID
+
+        Args:
+            run_id (str): The ID of the training or tuning run.
+            device (torch.device): The device (CPU or GPU) to use for inference.
+
+        Returns:
+            AntibodyPredictor: An initialized AntibodyPredictor instance.
+        """
+
         run_path = Path(f"runs/{run_id}")
         with open(run_path / "args.json", "r") as f:
             kwargs = json.load(f)
         model = AntibodyClassifier(**kwargs)
         best_model_path = run_path / "best_model.pt"
         model.load_state_dict(torch.load(best_model_path))
-        return cls(model=model, device=divice)
+        return cls(model=model, device=device)
 
 
 @app.command()
 def evaluate(
-    run_id: Annotated[str, typer.Option(help="Name for the training run ID")],
+    run_id: Annotated[str, typer.Option(help="Name for the training or tuning run ID")],
     dataset_loc: Annotated[
         str, typer.Option(help="Path to the test dataset in parquet format")
     ],
     batch_size: Annotated[int, typer.Option(help="Number of samples per batch")] = 64,
-) -> dict:
+) -> tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
+    """Evaluates a trained model on a test dataset.
+
+    Args:
+        run_id (str): Name for the training or tuning run ID to load the model.
+        dataset_loc (str): Path to the test dataset in parquet format.
+        batch_size (int, optional): Number of samples per batch. Defaults to 64.
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, np.ndarray, dict]:
+            - y_true: Ground-truth labels (NumPy array)
+            - y_pred: Predicted labels (NumPy array)
+            - y_prob: Class probabilities (NumPy array)
+            - metrics: A dictionary containing evaluation metrics.
+    """
 
     # load test data
     df = load_data(dataset_loc)
@@ -108,6 +155,8 @@ def evaluate(
     # Save evaluation metrics
     with open(f"runs/{run_id}/test_metrics.json", "w") as f:
         json.dump(metrics, f, indent=4, sort_keys=False)
+
+    return y_true, y_pred, y_prob, metrics
 
 
 if __name__ == "__main__":
