@@ -136,7 +136,7 @@ In this project, we will implement, train, optimize, and evaluate a transformer-
 See the table below for key parameters when running the `train.py` script. For a full list of options, run:
 
 ```sh
-python train.py --help 
+python protein_transformer/train.py --help 
 ```
 
 | Parameter | Description | Default|
@@ -158,7 +158,7 @@ python train.py --help
 See the table below for key parameters when running the `tune.py` script. For a full list of options, run:
 
 ```sh
-python tune.py --help 
+python protein_transformer/tune.py --help 
 ```
 
 | Parameter | Description | Default|
@@ -169,7 +169,7 @@ python tune.py --help
 |--num-classes | Number of final output dimensions | 2|
 |--batch-size | Number of samples per batch for each worker | 32|
 |--num-epochs | Number of epochs for training (per trial) | 20|
-|--num-samples | Number of trials for tuning | 100|
+|--num-samples | Number of trials for tuning | 50|
 |--gpu-per-trial | Number of GPUs to allocate per trial | 0.25|
 
 * Note: The --dataset-loc parameter must be specified as an absolute path.
@@ -180,7 +180,7 @@ python tune.py --help
 See the table below for key parameters when running the `evaluate.py` script. For a full list of options, run:
 
 ```sh
-python evaluate.py --help 
+python protein_transformer/evaluate.py --help 
 ```
 | Parameter | Description | Default|
 | -------- | ------- | ------- |

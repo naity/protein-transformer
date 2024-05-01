@@ -2,7 +2,7 @@
     "vocab_size": 24,
     "padding_idx": 1,
     "embedding_dim": 128,
-    "num_layers": 1,
+    "num_layers": 4,
     "num_heads": 8,
     "ffn_dim": 256,
     "dropout": 0.16,

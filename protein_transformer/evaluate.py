@@ -69,29 +69,31 @@ class AntibodyPredictor:
         )
 
     @classmethod
-    def from_run_id(cls, run_id: str, device: torch.device) -> "AntibodyPredictor":
+    def from_run_dir(cls, run_dir: Path, device: torch.device) -> "AntibodyPredictor":
         """Loads a trained AntibodyPredictor from saved files associated with a run ID
 
         Args:
-            run_id (str): The ID of the training or tuning run.
+            run_dir (Path): The path to the directory containing the saved model and training artifacts.
             device (torch.device): The device (CPU or GPU) to use for inference.
 
         Returns:
             AntibodyPredictor: An initialized AntibodyPredictor instance.
         """
 
-        run_path = Path(f"runs/{run_id}")
-        with open(run_path / "args.json", "r") as f:
+        with open(run_dir / "args.json", "r") as f:
             kwargs = json.load(f)
         model = AntibodyClassifier(**kwargs)
-        best_model_path = run_path / "best_model.pt"
+        best_model_path = run_dir / "best_model.pt"
         model.load_state_dict(torch.load(best_model_path))
         return cls(model=model, device=device)
 
 
 @app.command()
 def evaluate(
-    run_id: Annotated[str, typer.Option(help="Name for the training or tuning run ID")],
+    run_dir: Annotated[
+        str,
+        typer.Option(help="Path to the output directory for a training or tuning run"),
+    ],
     dataset_loc: Annotated[
         str, typer.Option(help="Path to the test dataset in parquet format")
     ],
@@ -100,7 +102,7 @@ def evaluate(
     """Evaluates a trained model on a test dataset.
 
     Args:
-        run_id (str): Name for the training or tuning run ID to load the model.
+        run_id (str): Path to the output directory for a training or tuning run.
         dataset_loc (str): Path to the test dataset in parquet format.
         batch_size (int, optional): Number of samples per batch. Defaults to 64.
 
@@ -111,6 +113,7 @@ def evaluate(
             - y_prob: Class probabilities (NumPy array)
             - metrics: A dictionary containing evaluation metrics.
     """
+    run_dir = Path(run_dir)
 
     # load test data
     df = load_data(dataset_loc)
@@ -127,14 +130,12 @@ def evaluate(
     test_dl = DataLoader(test_ds, collate_fn=collate_fn_partial, batch_size=batch_size)
 
     # load model
-    predictor = AntibodyPredictor.from_run_id(run_id, device)
+    predictor = AntibodyPredictor.from_run_dir(run_dir, device)
 
     y_true, y_pred, y_prob = predictor(test_dl)
 
     # Evaluation metrics
-    metrics = {
-        "run_id": run_id,
-    }
+    metrics = {}
 
     # accuracy
     metrics["accuracy"] = accuracy_score(y_true, y_pred)
@@ -148,12 +149,8 @@ def evaluate(
         precision_recall_fscore_support(y_true, y_pred, average="weighted")
     )
 
-    save_path = Path(f"runs/{run_id}")
-    if not save_path.exists():
-        save_path.mkdir(parents=True)
-
     # Save evaluation metrics
-    with open(f"runs/{run_id}/test_metrics.json", "w") as f:
+    with open(run_dir / "test_metrics.json", "w") as f:
         json.dump(metrics, f, indent=4, sort_keys=False)
 
     return y_true, y_pred, y_prob, metrics

@@ -100,11 +100,9 @@ def tune_model(
         int, typer.Option(help="Number of final output dimensions")
     ] = 2,
     batch_size: Annotated[int, typer.Option(help="Number of samples per batch")] = 32,
-    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 15,
-    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 50,
-    gpu_per_trial: Annotated[
-        float, typer.Option(help="Number of GPU per trial")
-    ] = 0.25,
+    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 30,
+    num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 100,
+    gpu_per_trial: Annotated[float, typer.Option(help="Number of GPU per trial")] = 0.2,
 ) -> tune.ResultGrid:
     """Tunes a model using Ray Tune and saves the best result.
 
@@ -116,8 +114,8 @@ def tune_model(
         num_classes (int, optional): Number of final output dimensions. Defaults to 2.
         batch_size (int, optional): Number of samples per batch. Defaults to 32.
         num_epochs (int, optional): Number of epochs for training. Defaults to 15.
-        num_samples (int, optional): Number of trials for tuning. Defaults to 50.
-        gpu_per_trial (float, optional): Number of GPUs per trial. Defaults to 0.25.
+        num_samples (int, optional): Number of trials for tuning. Defaults to 100.
+        gpu_per_trial (float, optional): Number of GPUs per trial. Defaults to 0.2.
 
     Returns:
         tune.ExperimentAnalysis: Ray Tune object containing analysis of the tuning process.
@@ -128,7 +126,7 @@ def tune_model(
         "num_layers": tune.choice([i for i in range(1, 9)]),  # 1 to 8
         "num_heads": tune.choice([1, 2, 4, 8]),  # 1, 2, 4, 8
         "dropout": tune.quniform(0, 0.2, 0.02),
-        "lr": tune.loguniform(1e-5, 1e-2),
+        "lr": tune.loguniform(1e-5, 1e-3),
         "num_classes": num_classes,
         "val_size": val_size,
         "batch_size": batch_size,
@@ -178,8 +176,8 @@ def tune_model(
 
 
 if __name__ == "__main__":
+    set_seeds()
     if ray.is_initialized():
         ray.shutdown()
     ray.init()
-    set_seeds()
     app()

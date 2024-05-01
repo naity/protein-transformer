@@ -178,8 +178,8 @@ def train_model(
     batch_size: Annotated[int, typer.Option(help="Number of samples per batch")] = 32,
     lr: Annotated[
         float, typer.Option(help="The learning rate for the optimizer")
-    ] = 1e-4,
-    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 15,
+    ] = 2e-5,
+    num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 20,
     verbose: Annotated[
         bool, typer.Option(help="Whether to print verbose training messages")
     ] = True,
@@ -198,8 +198,8 @@ def train_model(
         dropout (float, optional): Dropout probability for regularization. Defaults to 0.05.
         num_classes (int, optional): Number of final output dimensions. Defaults to 2 (binary classification).
         batch_size (int, optional): Number of samples per batch for each worker. Defaults to 32.
-        lr (float, optional): The learning rate for the optimizer. Defaults to 1e-4.
-        num_epochs (int, optional): Number of epochs for training. Defaults to 15.
+        lr (float, optional): The learning rate for the optimizer. Defaults to 2e-5.
+        num_epochs (int, optional): Number of epochs for training. Defaults to 20.
         verbose (bool, optional): Whether to print verbose training messages. Defaults to True.
 
     Returns:
