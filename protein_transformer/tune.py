@@ -31,7 +31,7 @@ def train_loop(config: dict[str, Any], dataset_loc: str) -> None:
     """
 
     # Dataset
-    df = load_data(dataset_loc)
+    df, classes = load_data(dataset_loc)
     tokenizer = Tokenizer()
     device = get_device()
 
@@ -76,6 +76,7 @@ def train_loop(config: dict[str, Any], dataset_loc: str) -> None:
         metrics = {"train_loss": train_loss, "val_loss": val_loss}
         with tempfile.TemporaryDirectory() as tempdir:
             checkpoint_dict = {
+                "classes": classes,
                 "model_kwargs": model_kwargs,
                 "epoch": epoch,
                 "model_state": model.state_dict(),
@@ -172,6 +173,9 @@ def tune_model(
         with open(save_path / "args.json", "w") as f:
             json.dump(checkpoint_dict["model_kwargs"], f, indent=4, sort_keys=False)
 
+        # save classes
+        with open(save_path / "classes.json", "w") as f:
+            json.dump(checkpoint_dict["classes"], f, indent=4, sort_keys=False)
     return results
 
 

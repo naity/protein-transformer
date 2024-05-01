@@ -116,7 +116,7 @@ def evaluate(
     run_dir = Path(run_dir)
 
     # load test data
-    df = load_data(dataset_loc)
+    df, _ = load_data(dataset_loc)
     df.reset_index(inplace=True, drop=True)
     test_ds = BCRDataset(df)
 

@@ -206,8 +206,18 @@ def train_model(
         None
     """
 
+    # create a directory to save the model
+    save_path = Path(f"runs/{run_id}")
+    if not save_path.exists():
+        save_path.mkdir(parents=True)
+
     # Dataset
-    df = load_data(dataset_loc)
+    df, classes = load_data(dataset_loc)
+
+    # save classes
+    with open(save_path / "classes.json", "w") as f:
+        json.dump(classes, f, indent=4, sort_keys=False)
+
     tokenizer = Tokenizer()
     device = get_device()
 
@@ -234,9 +244,6 @@ def train_model(
 
     # save best model based validation loss
     best_val_loss = float("inf")
-    save_path = Path(f"runs/{run_id}")
-    if not save_path.exists():
-        save_path.mkdir(parents=True)
 
     # save model parameters
     params = {
@@ -292,8 +299,6 @@ def train_model(
 
     # Save training results as CSV
     results = pd.DataFrame(results)
-    # round
-    results = results.round(3)
     results.to_csv(save_path / "results.csv", index=False)
 
 

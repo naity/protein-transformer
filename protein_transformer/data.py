@@ -89,7 +89,7 @@ class Tokenizer:
         return {"input_ids": input_ids, "attention_mask": attention_mask}
 
 
-def load_data(data_loc: str) -> pd.DataFrame:
+def load_data(data_loc: str) -> tuple[pd.DataFrame, dict]:
     """
     Loads and preprocesses data from a Parquet file.
 
@@ -100,9 +100,11 @@ def load_data(data_loc: str) -> pd.DataFrame:
         data_loc (str): Path to the Parquet file containing BCR data.
 
     Returns:
-        pd.DataFrame: Preprocessed Pandas DataFrame containing:
-            - Existing features from the original data.
-            - "label" (int): Encoded representation of the target variable.
+        tuple: A tuple containing:
+            * pd.DataFrame: Preprocessed Pandas DataFrame containing:
+                - Existing features from the original data.
+                - "label" (int): Encoded representation of the target variable.
+            * dict: A dictionary mapping encoded labels (integers) to their original class values.
     """
     df = pd.read_parquet(data_loc)
 
@@ -112,7 +114,10 @@ def load_data(data_loc: str) -> pd.DataFrame:
     # Encode target labels
     df["label"] = le.fit_transform(df["target"])
 
-    return df
+    # class mappinge
+    classes = {i: c for i, c in enumerate(le.classes_)}
+
+    return df, classes
 
 
 class BCRDataset(Dataset):
