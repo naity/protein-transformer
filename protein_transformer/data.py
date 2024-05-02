@@ -152,7 +152,7 @@ class BCRDataset(Dataset):
         """
         return len(self.df)
 
-    def __getitem__(self, i):
+    def __getitem__(self, i) -> tuple[str, int]:
         """
         Retrieves a data point (sequence and label) at a specific index.
 
