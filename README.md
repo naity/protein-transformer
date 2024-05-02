@@ -77,13 +77,13 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-This project provides a step-by-step guide to implementing a transformer model for antibody classification, covering training, hyperparameter tuning, and evaluation. 
+This project provides a step-by-step guide to implementing a transformer model for protein data, covering training, hyperparameter tuning, and evaluation. 
 
 **Highlights**
 
-* **Hands-on Transformer Implementation:** Follow along with code examples to build your own transformer-based antibody classifier.
-* **Optimize Performance:** Explore hyperparameter tuning techniques to improve your model's accuracy.
-* **Evaluation:** Assess your model's generalization ability and gain insights into its performance on a hold-out test dataset.
+* **Hands-on Transformer Implementation:** Follow along with code to build a transformer-based antibody classifier.
+* **Optimize Performance:** Explore hyperparameter tuning techniques to improve the model's accuracy.
+* **Evaluation:** Assess the model's generalization ability and gain insights into its performance on a hold-out test dataset.
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
