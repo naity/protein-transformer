@@ -35,7 +35,9 @@
     <br />
     <br />
     <br />
-    <a href="https://receptorgpt.streamlit.app/">Blog Post</a>
+    <a href="https://receptorgpt.streamlit.app/">Read on Medium</a>
+    ·
+    <a href="https://receptorgpt.streamlit.app/">Read on Substack</a>
     ·
     <a href="https://github.com/naity/protein-transformer/issues">Report Bug</a>
     ·
@@ -74,8 +76,6 @@
 
 <!-- ABOUT THE PROJECT -->
 ## About The Project
-
-[![Blogpost Screen Shot][blogpost-screenshot]](https://receptorgpt.streamlit.app/)
 
 This project provides a step-by-step guide to implementing a transformer model for antibody classification, covering training, hyperparameter tuning, and evaluation. 
 
@@ -150,8 +150,8 @@ python protein_transformer/train.py --help
 |--ffn-dim | Dimensionality of the feed-forward layer in the encoder | 128
 |--dropout | Dropout probability for regularization | 0.05
 |--batch-size | Number of samples per batch for each worker | 32
-|--lr | The learning rate for the optimizer | 0.0001
-|--num-epochs | Number of epochs for training | 15
+|--lr | The learning rate for the optimizer | 2e-5
+|--num-epochs | Number of epochs for training | 20
 
 **2. Running the `tune.py` Script**
 
@@ -168,9 +168,9 @@ python protein_transformer/tune.py --help
 |--val-size | Proportion of the dataset for validation | 0.15|
 |--num-classes | Number of final output dimensions | 2|
 |--batch-size | Number of samples per batch for each worker | 32|
-|--num-epochs | Number of epochs for training (per trial) | 20|
-|--num-samples | Number of trials for tuning | 50|
-|--gpu-per-trial | Number of GPUs to allocate per trial | 0.25|
+|--num-epochs | Number of epochs for training (per trial) | 30|
+|--num-samples | Number of trials for tuning | 100|
+|--gpu-per-trial | Number of GPUs to allocate per trial | 0.2|
 
 * Note: The --dataset-loc parameter must be specified as an absolute path.
 
@@ -184,7 +184,7 @@ python protein_transformer/evaluate.py --help
 ```
 | Parameter | Description | Default|
 | -------- | ------- | ------- |
-|--run-id | Unique name of the training or tuning run to load the best model | None (Required)|
+|--run-dir | Path to the output directory for a training or tuning run | None (Required)|
 |--dataset-loc | Path to the test dataset in parquet format | None (Required)|
 |--batch-size | Number of samples per batch | 64|
 
@@ -259,7 +259,6 @@ Distributed under the Apache License. See `LICENSE.txt` for more information.
 
 <!-- MARKDOWN LINKS & IMAGES -->
 <!-- https://www.markdownguide.org/basic-syntax/#reference-style-links -->
-[blogpost-screenshot]: images/screenshot.png
 [Python_badge]: https://img.shields.io/badge/Python-3776AB?logo=python&logoColor=fff&style=flat
 [Python-url]: https://www.python.org/
 [Pytorch_badge]: https://img.shields.io/badge/PyTorch-EE4C2C?logo=pytorch&logoColor=fff&style=flat

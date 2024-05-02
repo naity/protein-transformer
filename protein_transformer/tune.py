@@ -114,7 +114,7 @@ def tune_model(
                                     Defaults to 0.15.
         num_classes (int, optional): Number of final output dimensions. Defaults to 2.
         batch_size (int, optional): Number of samples per batch. Defaults to 32.
-        num_epochs (int, optional): Number of epochs for training. Defaults to 15.
+        num_epochs (int, optional): Number of epochs for training. Defaults to 30.
         num_samples (int, optional): Number of trials for tuning. Defaults to 100.
         gpu_per_trial (float, optional): Number of GPUs per trial. Defaults to 0.2.
 
