@@ -106,14 +106,9 @@ This project provides a step-by-step guide to implementing a transformer model f
 <!-- GETTING STARTED -->
 ## Getting Started
 
-1. Clone the repo:
+Clone the repo:
 ```sh
 git clone https://github.com/naity/protein-transformer.git
-```
-
-2. Run the `train.py` script to see a list of available parameters:
-```sh
-python protein_transformer/train.py --help
 ```
 
 ### Prerequisites
@@ -153,6 +148,23 @@ python protein_transformer/train.py --help
 |--lr | The learning rate for the optimizer | 2e-5
 |--num-epochs | Number of epochs for training | 20
 
+For example, to execute the training script with default parameters and store the results under a run ID named `train01`, use the following command:
+
+```sh
+python protein_transformer/train.py --run-id train01 --dataset-loc data/bcr_train.parquet
+``` 
+
+Upon completion, the script stores training results in the `runs/train01` directory by default. This includes model arguments, the best-performing model (based on validation loss), training and validation loss records, along with validation metrics for each epoch. These metrics, which include the following, are saved in the `runs/train01/results.csv` file:
+
+```
+Accuracy: 0.727
+AUC score: 0.851
+Precision: 0.734
+Recall: 0.727
+F1-score: 0.725
+```
+
+
 **2. Running the `tune.py` Script**
 
 See the table below for key parameters when running the `tune.py` script. For a full list of options, run:
@@ -174,6 +186,14 @@ python protein_transformer/tune.py --help
 
 * Note: The --dataset-loc parameter must be specified as an absolute path.
 
+For example, to initiate the tuning process with default parameters and store the results under a run ID named `tune01`, execute the `tune.py` script from the project root directory:
+
+```sh
+python protein_transformer/tune.py --run-id tune01 --dataset-loc /home/ytian/github/protein-transformer/data/bcr_train.parquet
+```
+
+By default, it will execute 100 trials with different parameter combinations, running each trial for up to 30 epochs. Ray Tune utilizes early stopping for unpromising trials, allowing for efficient exploration of the hyperparameter space and focuses resources on better-performing configurations. It will track the results of each trial, and upon completion, the best-performing model based on validation loss will be saved in the `runs/tune01` directory by default. Additionally, tuning logs, including results from each trial, are stored within the same `runs/tune01` directory for easy access and analysis.
+
 
 **3. Running the `evaluate.py` Script**
 
@@ -187,6 +207,23 @@ python protein_transformer/evaluate.py --help
 |--run-dir | Path to the output directory for a training or tuning run | None (Required)|
 |--dataset-loc | Path to the test dataset in parquet format | None (Required)|
 |--batch-size | Number of samples per batch | 64|
+  
+
+For example, to evaluate the best model from the `tune01` run on the hold-out test dataset, execute the following command from the command line:
+
+```sh
+python protein_transformer/evaluate.py --run-dir runs/tune01 --dataset-loc /home/ytian/github/protein-transformer/data/bcr_test.parquet
+```
+
+Upon completion, the script will save test metrics in a file named `test_metrics.json`, like the following example, within the  run directory provided in the `evaluate.py` command:
+
+```
+Accuracy: 0.761
+AUC score: 0.837
+Precision: 0.761
+Recall: 0.761
+F1-score: 0.761
+```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

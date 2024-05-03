@@ -104,6 +104,9 @@ def tune_model(
     num_epochs: Annotated[int, typer.Option(help="Number of epochs for training")] = 30,
     num_samples: Annotated[int, typer.Option(help="Number of trials for tuning")] = 100,
     gpu_per_trial: Annotated[float, typer.Option(help="Number of GPU per trial")] = 0.2,
+    output_dir: Annotated[
+        str, typer.Option(help="Path to save the best model and tuning results")
+    ] = "runs",
 ) -> tune.ResultGrid:
     """Tunes a model using Ray Tune and saves the best result.
 
@@ -117,6 +120,7 @@ def tune_model(
         num_epochs (int, optional): Number of epochs for training. Defaults to 30.
         num_samples (int, optional): Number of trials for tuning. Defaults to 100.
         gpu_per_trial (float, optional): Number of GPUs per trial. Defaults to 0.2.
+        output_dir (str): Path to save the best model and tuning results.
 
     Returns:
         tune.ExperimentAnalysis: Ray Tune object containing analysis of the tuning process.
@@ -152,7 +156,7 @@ def tune_model(
     )
     results = tuner.fit()
 
-    save_path = Path(f"runs/{run_id}")
+    save_path = Path(f"{output_dir}/{run_id}")
     if not save_path.exists():
         save_path.mkdir(parents=True)
 

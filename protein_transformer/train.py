@@ -183,6 +183,9 @@ def train_model(
     verbose: Annotated[
         bool, typer.Option(help="Whether to print verbose training messages")
     ] = True,
+    output_dir: Annotated[
+        str, typer.Option(help="Path to save the best model and training results")
+    ] = "runs",
 ) -> None:
     """
     Trains a classification model using a Transformer architecture.
@@ -201,13 +204,14 @@ def train_model(
         lr (float, optional): The learning rate for the optimizer. Defaults to 2e-5.
         num_epochs (int, optional): Number of epochs for training. Defaults to 20.
         verbose (bool, optional): Whether to print verbose training messages. Defaults to True.
+        output_dir (str): Path to save the best model and training results.
 
     Returns:
         None
     """
 
     # create a directory to save the model
-    save_path = Path(f"runs/{run_id}")
+    save_path = Path(f"{output_dir}/{run_id}")
     if not save_path.exists():
         save_path.mkdir(parents=True)
 
