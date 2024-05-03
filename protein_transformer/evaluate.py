@@ -102,7 +102,7 @@ def evaluate(
     """Evaluates a trained model on a test dataset.
 
     Args:
-        run_id (str): Path to the output directory for a training or tuning run.
+        run_dir (str): Path to the output directory for a training or tuning run.
         dataset_loc (str): Path to the test dataset in parquet format.
         batch_size (int, optional): Number of samples per batch. Defaults to 64.
 
