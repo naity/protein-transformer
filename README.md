@@ -37,7 +37,7 @@
     <br />
     <a href="https://receptorgpt.streamlit.app/">Read on Medium</a>
     ·
-    <a href="https://receptorgpt.streamlit.app/">Read on Substack</a>
+    <a href="https://open.substack.com/pub/ytian/p/building-transformer-models-for-proteins?r=2mh9ns&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true">Read on Substack</a>
     ·
     <a href="https://github.com/naity/protein-transformer/issues">Report Bug</a>
     ·
@@ -94,9 +94,9 @@ This project provides a step-by-step guide to implementing a transformer model f
 * [![Python][Python_badge]][Python-url]
 * [![Pytorch][Pytorch_badge]][Pytorch-url]
 * [![Ray][Ray_badge]][Ray-url]
+* [![scikit-learn][scikit-learn_badge]][scikit-learn-url]
 * [![Pandas][pandas_badge]][pandas-url]
 * [![NumPy][numpy_badge]][numpy-url]
-* [![scikit-learn][scikit-learn_badge]][scikit-learn-url]
 * [![Typer][typer_badge]][typer-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
