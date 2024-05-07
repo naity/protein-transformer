@@ -35,9 +35,9 @@
     <br />
     <br />
     <br />
-    <a href="https://towardsdatascience.com/building-transformer-models-for-proteins-from-scratch-60884eab5cc8" target="_blank">Read on Medium </a>
+    <a href="https://towardsdatascience.com/building-transformer-models-for-proteins-from-scratch-60884eab5cc8">Read on Medium </a>
     ·
-    <a href="https://open.substack.com/pub/ytian/p/building-transformer-models-for-proteins?r=2mh9ns&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true" target="_blank">Read on Substack</a>
+    <a href="https://open.substack.com/pub/ytian/p/building-transformer-models-for-proteins?r=2mh9ns&utm_campaign=post&utm_medium=web&showWelcomeOnShare=true">Read on Substack</a>
     ·
     <a href="https://github.com/naity/protein-transformer/issues">Report Bug</a>
     ·
@@ -288,7 +288,9 @@ Distributed under the Apache License. See `LICENSE.txt` for more information.
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
+* [IEDB](https://www.iedb.org/)
 * [UvA Deep Learning](https://uvadlc-notebooks.readthedocs.io/en/latest/index.html)
+* [Made With ML](https://madewithml.com/)
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
